@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Among Us - Clear Asteroids (Retro Arcade)</title>
-    <!-- Importing classic pixel arcade font -->
+    <title>Among Us - Clear Asteroids (Tactical Radar)</title>
+    <!-- Classic arcade pixel font -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
@@ -12,9 +12,10 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            /* Wallpaper covers the whole browser window screen */
+            /* Wallpaper visible in the background */
             background: url('among_us shooting.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background-size: 85% auto;
+            background-color: #050508;
             font-family: 'Press Start 2P', monospace;
             display: flex;
             align-items: center;
@@ -23,48 +24,37 @@
             user-select: none;
         }
 
+        /* Semi-translucent monitor bezel */
         #console-frame {
-            background: rgba(17, 19, 24, 0.92);
-            padding: 20px;
-            border-radius: 6px;
-            border: 4px solid #333d4e;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(0,255,204,0.1);
-        }
-
-        .console-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 10px;
-            color: #ffb703;
-            letter-spacing: 1px;
-        }
-
-        .console-header span {
-            background: #050508;
-            padding: 6px 10px;
-            border: 2px solid #333d4e;
+            position: relative;
+            background: rgba(20, 26, 32, 0.45);
+            backdrop-filter: blur(2px);
+            padding: 12px;
+            border: 5px solid #3c4856;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(46, 125, 50, 0.25);
+            /* Chamfered top-right cut from Among Us */
+            clip-path: polygon(0% 0%, 93% 0%, 100% 7%, 100% 100%, 0% 100%);
         }
 
         #game-container {
             position: relative;
-            width: 1000px;
-            height: 600px;
-            background: #050508; /* Clean dark space background inside playing region */
-            border: 4px solid #00ffcc;
-            box-shadow: inset 0 0 30px rgba(0,255,204,0.15);
+            width: 680px;
+            height: 680px;
+            /* Transparent so wallpaper is visible underneath */
+            background: transparent;
+            border: 4px solid rgba(20, 47, 28, 0.85);
             overflow: hidden;
-            cursor: crosshair;
+            cursor: none;
         }
 
-        /* CRT Scanline overlay effect */
+        /* Subtle CRT scanline overlay */
         #game-container::after {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
             background-size: 100% 4px;
             z-index: 4;
             pointer-events: none;
@@ -72,119 +62,92 @@
 
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
 
-        .ui-panel {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            pointer-events: none;
-            z-index: 5;
-            text-shadow: 2px 2px #000;
-        }
-
-        .hud-item {
-            background: #050508;
-            padding: 8px 12px;
-            border: 2px solid #00ffcc;
-            color: #00ffcc;
-        }
-
-        /* Overlays */
+        /* Overlay screens for Start / Game Over */
         .overlay-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 8, 0.92);
+            background: rgba(10, 30, 15, 0.8);
+            backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 10;
             text-align: center;
-            padding: 20px;
+            padding: 25px;
             box-sizing: border-box;
         }
 
         h1 {
-            font-size: 22px;
-            color: #ffb703;
+            font-size: 24px;
+            color: #55f37d;
             margin-bottom: 25px;
-            text-shadow: 3px 3px #ff0055;
+            text-shadow: 3px 3px #0e3b18;
             line-height: 1.5;
         }
 
         p {
-            color: #ffffff;
+            color: #d4ffd8;
             font-size: 10px;
             margin-bottom: 35px;
-            line-height: 2;
+            line-height: 2.2;
         }
 
         .btn-retro {
-            background-color: #ff0055;
+            background-color: #27ae60;
             color: #ffffff;
             border: 4px solid #ffffff;
-            padding: 14px 24px;
+            padding: 14px 26px;
             font-size: 12px;
             font-family: 'Press Start 2P', monospace;
             cursor: pointer;
-            box-shadow: 4px 4px 0px #00ffcc;
+            box-shadow: 4px 4px 0px #0e3b18;
             transition: 0.05s;
         }
 
         .btn-retro:hover {
-            background-color: #ff3377;
+            background-color: #2ecc71;
         }
 
         .btn-retro:active {
             transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #00ffcc;
+            box-shadow: 2px 2px 0px #0e3b18;
         }
 
-        .btn-secondary {
-            background-color: #00ffcc;
-            color: #050508;
-            box-shadow: 4px 4px 0px #ff0055;
+        .btn-danger {
+            background-color: #c0392b;
+            box-shadow: 4px 4px 0px #4d130d;
         }
-        .btn-secondary:hover {
-            background-color: #3effff;
+        .btn-danger:hover {
+            background-color: #e74c3c;
         }
     </style>
 </head>
 <body>
 
     <div id="console-frame">
-        <div class="console-header">
-            <span>WEAPONS TASK: ASTEROIDS</span>
-            <span id="task-status-header">STATUS: IDLE</span>
-        </div>
         <div id="game-container">
-            <canvas id="gameCanvas" width="1000" height="600"></canvas>
-            
-            <div class="ui-panel">
-                <div class="hud-item" id="score-display">SCORE: 000</div>
-                <div class="hud-item" id="timer-display">TIME: 30S</div>
-            </div>
+            <canvas id="gameCanvas" width="700" height="700"></canvas>
 
-            <!-- Start Lobby Screen -->
+            <!-- Start Screen -->
             <div id="start-screen" class="overlay-screen">
-                <h1>CLEAR ASTEROIDS</h1>
-                <p>AIM YOUR POINTER & CLICK OR FIRE TO DESTROY INCOMING ROCKS.<br>SURVIVE FOR 30 SECONDS!</p>
-                <button class="btn-retro btn-secondary" onclick="startGame()">START TASK</button>
+                <h1>WEAPONS TASK</h1>
+                <p>CLEAR ASTEROIDS<br>CALIBRATE RADAR & FIRE TO DESTROY ROCKS<br>SURVIVE FOR 30 SECONDS!</p>
+                <button class="btn-retro" onclick="startGame()">START TASK</button>
             </div>
 
-            <!-- Game Over / Complete Screen -->
+            <!-- Task Complete Screen -->
             <div id="game-over-screen" class="overlay-screen" style="display: none;">
-                <h1 style="color: #ff0055;">TASK COMPLETE</h1>
-                <p id="final-score" style="color: #00ffcc;">ASTEROIDS DESTROYED: 0</p>
-                <button class="btn-retro" onclick="closeTask()">CLOSE TASK</button>
+                <h1 style="color: #55f37d;">TASK COMPLETE</h1>
+                <p id="final-score" style="color: #ffffff; font-size: 12px;">DESTROYED: 0</p>
+                <button class="btn-retro btn-danger" onclick="closeTask()">CLOSE TASK</button>
             </div>
         </div>
     </div>
@@ -202,14 +165,21 @@
     let asteroids = [];
     let particles = [];
     let spawnTimer = 0;
-    let spawnInterval = 75;
+    let spawnInterval = 65;
 
     let mouseX = canvas.width / 2;
     let mouseY = canvas.height / 2;
+    let laserFlash = 0;
+
+    const ROCK_PALETTES = [
+        { base: '#36533d', shadow: '#203426', light: '#4d7557', border: '#111d15' },
+        { base: '#3f5647', shadow: '#25352b', light: '#5b7a66', border: '#121d16' },
+        { base: '#2f4b37', shadow: '#1c2f22', light: '#466d51', border: '#0f1c13' }
+    ];
 
     class Asteroid {
         constructor() {
-            this.radius = Math.random() * 20 + 22;
+            this.radius = Math.random() * 20 + 26;
             
             const edge = Math.floor(Math.random() * 4);
             if (edge === 0) {
@@ -227,22 +197,34 @@
             }
 
             const targetX = canvas.width / 2 + (Math.random() - 0.5) * 200;
-            const targetY = canvas.height / 2 + (Math.random() - 0.5) * 150;
+            const targetY = canvas.height / 2 + (Math.random() - 0.5) * 200;
 
             const angle = Math.atan2(targetY - this.y, targetX - this.x);
-            const speed = (Math.random() * 1.2 + 0.8) * gameSpeedMultiplier;
+            const speed = (Math.random() * 1.3 + 0.9) * gameSpeedMultiplier;
 
             this.vx = Math.cos(angle) * speed;
             this.vy = Math.sin(angle) * speed;
             this.rotation = Math.random() * Math.PI * 2;
-            this.rotSpeed = (Math.random() - 0.5) * 0.04;
-            
+            this.rotSpeed = (Math.random() - 0.5) * 0.03;
+
+            this.palette = ROCK_PALETTES[Math.floor(Math.random() * ROCK_PALETTES.length)];
+
             this.points = [];
-            const numPoints = 7;
+            const numPoints = 8;
             for (let i = 0; i < numPoints; i++) {
                 const a = (i / numPoints) * Math.PI * 2;
-                const r = this.radius * (0.75 + Math.random() * 0.5);
+                const r = this.radius * (0.8 + Math.sin(i * 2.5) * 0.15 + (Math.random() * 0.18));
                 this.points.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+            }
+
+            this.craters = [];
+            const craterCount = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < craterCount; i++) {
+                this.craters.push({
+                    x: (Math.random() - 0.5) * this.radius * 0.8,
+                    y: (Math.random() - 0.5) * this.radius * 0.8,
+                    r: (Math.random() * 0.2 + 0.12) * this.radius
+                });
             }
         }
 
@@ -256,33 +238,63 @@
             ctx.save();
             ctx.translate(this.x, this.y);
             ctx.rotate(this.rotation);
-            ctx.strokeStyle = '#00ffcc';
-            ctx.fillStyle = '#111827';
-            ctx.lineWidth = 3;
+
             ctx.beginPath();
             ctx.moveTo(this.points[0].x, this.points[0].y);
             for (let i = 1; i < this.points.length; i++) {
                 ctx.lineTo(this.points[i].x, this.points[i].y);
             }
             ctx.closePath();
+
+            ctx.fillStyle = this.palette.base;
             ctx.fill();
+
+            ctx.save();
+            ctx.clip();
+            ctx.beginPath();
+            ctx.arc(this.radius * 0.2, this.radius * 0.3, this.radius * 1.1, 0, Math.PI * 2);
+            ctx.fillStyle = this.palette.shadow;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(-this.radius * 0.3, -this.radius * 0.3, this.radius * 0.7, 0, Math.PI * 2);
+            ctx.fillStyle = this.palette.light;
+            ctx.globalAlpha = 0.35;
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+
+            this.craters.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+                ctx.fillStyle = this.palette.shadow;
+                ctx.fill();
+                ctx.strokeStyle = this.palette.border;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            ctx.lineWidth = 4;
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = this.palette.border;
             ctx.stroke();
+
             ctx.restore();
         }
     }
 
     class Particle {
-        constructor(x, y) {
+        constructor(x, y, color) {
             this.x = x;
             this.y = y;
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 5 + 1;
+            const speed = Math.random() * 5 + 1.5;
             this.vx = Math.cos(angle) * speed;
             this.vy = Math.sin(angle) * speed;
             this.alpha = 1.0;
             this.decay = Math.random() * 0.04 + 0.02;
-            this.size = Math.random() * 4 + 2;
-            this.color = Math.random() > 0.5 ? '#00ffcc' : '#ff0055';
+            this.size = Math.random() * 5 + 3;
+            this.color = color;
         }
 
         update() {
@@ -295,18 +307,20 @@
             ctx.save();
             ctx.globalAlpha = Math.max(this.alpha, 0);
             ctx.fillStyle = this.color;
-            ctx.fillRect(this.x, this.y, this.size, this.size);
+            ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
             ctx.restore();
         }
     }
 
-    function fireAt(x, y) {
+    function fire() {
         if (!gameRunning) return;
+
+        laserFlash = 3;
 
         for (let i = asteroids.length - 1; i >= 0; i--) {
             const ast = asteroids[i];
-            const dist = Math.hypot(ast.x - x, ast.y - y);
-            if (dist < ast.radius * 1.3) {
+            const dist = Math.hypot(ast.x - mouseX, ast.y - mouseY);
+            if (dist < ast.radius * 1.35) {
                 destroyAsteroid(ast);
                 break;
             }
@@ -317,12 +331,15 @@
     // HARDWARE INTEGRATION HOOK
     // ==========================================
     window.triggerShoot = function() {
-        fireAt(mouseX, mouseY);
+        fire();
     };
 
     function destroyAsteroid(ast) {
-        for (let i = 0; i < 15; i++) {
-            particles.push(new Particle(ast.x, ast.y));
+        for (let i = 0; i < 10; i++) {
+            particles.push(new Particle(ast.x, ast.y, '#55f37d'));
+        }
+        for (let i = 0; i < 8; i++) {
+            particles.push(new Particle(ast.x, ast.y, ast.palette.shadow));
         }
 
         const index = asteroids.indexOf(ast);
@@ -332,7 +349,6 @@
 
         score++;
         gameSpeedMultiplier = 1 + Math.floor(score / 5) * 0.1;
-        updateHUD();
     }
 
     canvas.addEventListener('mousemove', (e) => {
@@ -343,8 +359,8 @@
         mouseY = (e.clientY - rect.top) * scaleY;
     });
 
-    canvas.addEventListener('click', () => {
-        fireAt(mouseX, mouseY);
+    canvas.addEventListener('mousedown', () => {
+        fire();
     });
 
     window.addEventListener('keydown', (e) => {
@@ -353,12 +369,6 @@
             window.triggerShoot();
         }
     });
-
-    function updateHUD() {
-        const formattedScore = String(score).padStart(3, '0');
-        document.getElementById('score-display').innerText = `SCORE: ${formattedScore}`;
-        document.getElementById('timer-display').innerText = `TIME: ${timeLeft}S`;
-    }
 
     function startGame() {
         score = 0;
@@ -371,9 +381,7 @@
 
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('game-over-screen').style.display = 'none';
-        document.getElementById('task-status-header').innerText = 'STATUS: ACTIVE';
 
-        updateHUD();
         startTimer();
         gameLoop();
     }
@@ -383,7 +391,6 @@
         timerInterval = setInterval(() => {
             if (!gameRunning) return;
             timeLeft--;
-            updateHUD();
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 endGame();
@@ -393,10 +400,8 @@
 
     function endGame() {
         gameRunning = false;
-        const formattedScore = String(score).padStart(3, '0');
-        document.getElementById('final-score').innerText = `ASTEROIDS DESTROYED: ${formattedScore}`;
+        document.getElementById('final-score').innerText = `DESTROYED: ${score}`;
         document.getElementById('game-over-screen').style.display = 'flex';
-        document.getElementById('task-status-header').innerText = 'STATUS: COMPLETED';
     }
 
     function closeTask() {
@@ -404,15 +409,98 @@
         clearInterval(timerInterval);
         document.getElementById('game-over-screen').style.display = 'none';
         document.getElementById('start-screen').style.display = 'flex';
-        document.getElementById('task-status-header').innerText = 'STATUS: IDLE';
+    }
+
+    function drawTacticalHUD() {
+        // 1. Dual-laser targeting lines from bottom corners
+        ctx.save();
+        ctx.strokeStyle = laserFlash > 0 ? '#b8ffd1' : '#225d36';
+        ctx.lineWidth = laserFlash > 0 ? 5 : 3.5;
+        ctx.lineCap = 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height);
+        ctx.lineTo(mouseX, mouseY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(canvas.width, canvas.height);
+        ctx.lineTo(mouseX, mouseY);
+        ctx.stroke();
+
+        // 2. Tactical Square Crosshair Box
+        const size = 32;
+        const tick = 10;
+        ctx.strokeStyle = laserFlash > 0 ? '#55f37d' : '#143820';
+        ctx.lineWidth = 4;
+
+        ctx.strokeRect(mouseX - size/2, mouseY - size/2, size, size);
+
+        ctx.beginPath();
+        ctx.moveTo(mouseX, mouseY - size/2);
+        ctx.lineTo(mouseX, mouseY - size/2 - tick);
+        ctx.moveTo(mouseX, mouseY + size/2);
+        ctx.lineTo(mouseX, mouseY + size/2 + tick);
+        ctx.moveTo(mouseX - size/2, mouseY);
+        ctx.lineTo(mouseX - size/2 - tick, mouseY);
+        ctx.moveTo(mouseX + size/2, mouseY);
+        ctx.lineTo(mouseX + size/2 + tick, mouseY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(mouseX - 6, mouseY);
+        ctx.lineTo(mouseX + 6, mouseY);
+        ctx.moveTo(mouseX, mouseY - 6);
+        ctx.lineTo(mouseX, mouseY + 6);
+        ctx.stroke();
+
+        ctx.restore();
+
+        if (laserFlash > 0) laserFlash--;
+
+        // 3. Bottom-Left "Destroyed: X" Text
+        ctx.save();
+        ctx.font = '26px sans-serif';
+        ctx.fontWeight = 'bold';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 5;
+        const text = `Destroyed: ${score}`;
+        ctx.strokeText(text, 25, canvas.height - 25);
+        ctx.fillText(text, 25, canvas.height - 25);
+
+        // Top-Right Retro Timer Display
+        ctx.font = '14px "Press Start 2P", monospace';
+        ctx.fillStyle = '#55f37d';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 4;
+        const timerText = `TIME: ${timeLeft}S`;
+        ctx.strokeText(timerText, canvas.width - 150, 40);
+        ctx.fillText(timerText, canvas.width - 150, 40);
+        ctx.restore();
     }
 
     function gameLoop() {
         if (!gameRunning) return;
 
-        // Solid dark space fill inside the game screen so gameplay is crisp and readable
-        ctx.fillStyle = '#050508';
+        // Clear canvas so underlying wallpaper is visible
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Semi-transparent tactical green wash (55% opacity for see-through night-vision look)
+        ctx.fillStyle = 'rgba(25, 95, 42, 0.55)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Radar background grid overlay
+        ctx.strokeStyle = 'rgba(65, 180, 95, 0.25)';
+        ctx.lineWidth = 1.5;
+        const grid = 50;
+        for (let x = 0; x < canvas.width; x += grid) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += grid) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        }
 
         spawnTimer++;
         if (spawnTimer >= spawnInterval) {
@@ -425,7 +513,7 @@
             ast.update();
             ast.draw();
 
-            if (ast.x < -150 || ast.x > canvas.width + 150 || ast.y < -150 || ast.y > canvas.height + 150) {
+            if (ast.x < -100 || ast.x > canvas.width + 100 || ast.y < -100 || ast.y > canvas.height + 100) {
                 asteroids.splice(i, 1);
             }
         }
@@ -438,6 +526,8 @@
                 particles.splice(i, 1);
             }
         }
+
+        drawTacticalHUD();
 
         requestAnimationFrame(gameLoop);
     }
